@@ -31,13 +31,18 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "name"=>"required|max:80|unique:products|string",
-            "notes"=>"required|max:460|string",
+            "name"=>"required|string|max:80|unique:products",
+            "notes"=>"required|string|max:460",
             "price"=>"required|numeric|min:1|max:1000"
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400)->setStatusCode(400);
+            return response()->json([
+                "data"=>null,
+                "message"=>$validator->errors()->toJson(),
+                "response"=>404
+            ])->setStatusCode(400);
+
         }
 
         try{
@@ -56,7 +61,7 @@ class ProductController extends Controller
             return response()->json([
                 "data"=>null,
                 "message"=>$e->getMessage(),
-                "response"=>404
+                "response"=>400
             ])->setStatusCode(400);
         }
     }
@@ -83,13 +88,18 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            "name"=>"required|max:80|string|unique:products,name,$id",
-            "notes"=>"required|max:460|string",
+            "name"=>"required|string|max:80|unique:products,name,$id",
+            "notes"=>"required|string|max:460",
             "price"=>"required|numeric|min:1|max:1000"
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json([
+                "data"=>null,
+                "message"=>$validator->errors()->toJson(),
+                "response"=>400
+            ])->setStatusCode(400);
+
         }
 
         try{
